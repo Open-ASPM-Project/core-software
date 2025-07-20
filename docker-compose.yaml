@@ -1,0 +1,236 @@
+version: "3.8"
+
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    environment:
+      RABBITMQ_CONFIG_FILE: "rabbitmq.conf"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+
+  secrethound:
+    build:
+      context: ${BACKEND_DIR}
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      LOG_LEVEL: INFO
+      SECRET_KEY: secret
+      ALGORITHM: HS256
+      FRONTEND_URL: ${FRONTEND_URL}
+      ACCESS_TOKEN_EXPIRE_MINUTES: 1440
+      RELOAD: false
+      PORT: 8000
+      TYPEORM_SYNC: true
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+
+  user-auth:
+    build:
+      context: ${BACKEND_DIR}/v2
+      dockerfile: ./apps/user-auth/Dockerfile
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+      BCRYPT_SALT_ROUNDS: 10
+      SECRET_KEY: secret
+      TYPEORM_SYNC: false
+      FRONTEND_URL: ${FRONTEND_URL}
+      LICENSE_SERVER_VALIDATE_URL: ${LICENSE_SERVER_VALIDATE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+
+  # licenses:
+  #   build:
+  #     context: ${BACKEND_DIR}/v2
+  #     dockerfile: ./apps/licenses/Dockerfile
+  #   environment:
+  #     PORT: 3000
+  #     DB_HOST: db
+  #     DB_PORT: 5432
+  #     DB_NAME: ${POSTGRES_DB}
+  #     DB_USER: ${POSTGRES_USER}
+  #     DB_PASS: ${POSTGRES_PASSWORD}
+  #     BCRYPT_SALT_ROUNDS: 10
+  #     SECRET_KEY: secret
+  #     TYPEORM_SYNC: false
+  #     BREVO_API_KEY: ""
+  #     EMAIL_USER: ""
+  #   depends_on:
+  #     - db
+  #   restart: always
+
+
+  # assets:
+  #   build:
+  #     context: ${BACKEND_DIR}/v2
+  #     dockerfile: ./apps/assets/Dockerfile
+  #   environment:
+  #     PORT: 3000
+  #     DB_HOST: db
+  #     DB_PORT: 5432
+  #     DB_NAME: ${POSTGRES_DB}
+  #     DB_USER: ${POSTGRES_USER}
+  #     DB_PASS: ${POSTGRES_PASSWORD}
+  #     BCRYPT_SALT_ROUNDS: 10
+  #     SECRET_KEY: secret
+  #     TYPEORM_SYNC: false
+  #     FRONTEND_URL: ${FRONTEND_URL}
+  #     LICENSE_SERVER_VALIDATE_URL: ${LICENSE_SERVER_VALIDATE_URL}
+  #     ENABLE_ASSET_WORKER: false
+  #     RABBITMQ_URL: "amqp://rabbitmq:5672"
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
+  #     - secrethound
+  #     - user-auth
+  #   restart: always
+
+
+  # asset-worker:
+  #   build:
+  #     context: ${BACKEND_DIR}/v2
+  #     dockerfile: ./apps/assets/Dockerfile
+  #   environment:
+  #     PORT: 3000
+  #     DB_HOST: db
+  #     DB_PORT: 5432
+  #     DB_NAME: ${POSTGRES_DB}
+  #     DB_USER: ${POSTGRES_USER}
+  #     DB_PASS: ${POSTGRES_PASSWORD}
+  #     BCRYPT_SALT_ROUNDS: 10
+  #     SECRET_KEY: secret
+  #     TYPEORM_SYNC: false
+  #     FRONTEND_URL: ${FRONTEND_URL}
+  #     LICENSE_SERVER_VALIDATE_URL: ${LICENSE_SERVER_VALIDATE_URL}
+  #     ENABLE_ASSET_WORKER: true
+  #     RABBITMQ_URL: "amqp://rabbitmq:5672"
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
+  #     - secrethound
+  #     - user-auth
+  #   restart: always
+
+
+  # vulnerability:
+  #   build:
+  #     context: ${BACKEND_DIR}/v2
+  #     dockerfile: ./apps/vulnerability/Dockerfile
+  #   environment:
+  #     PORT: 3000
+  #     DB_HOST: db
+  #     DB_PORT: 5432
+  #     DB_NAME: ${POSTGRES_DB}
+  #     DB_USER: ${POSTGRES_USER}
+  #     DB_PASS: ${POSTGRES_PASSWORD}
+  #     BCRYPT_SALT_ROUNDS: 10
+  #     SECRET_KEY: secret
+  #     TYPEORM_SYNC: false
+  #     FRONTEND_URL: ${FRONTEND_URL}
+  #     LICENSE_SERVER_VALIDATE_URL: ${LICENSE_SERVER_VALIDATE_URL}
+  #     RABBITMQ_URL: "amqp://rabbitmq:5672"
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
+  #     - secrethound
+  #     - user-auth
+  #     - assets
+  #   restart: always
+
+
+  # vulnerability-worker:
+  #   build:
+  #     context: ${BACKEND_DIR}/v2
+  #     dockerfile: ./apps/vulnerability/Dockerfile
+  #   environment:
+  #     PORT: 3000
+  #     DB_HOST: db
+  #     DB_PORT: 5432
+  #     DB_NAME: ${POSTGRES_DB}
+  #     DB_USER: ${POSTGRES_USER}
+  #     DB_PASS: ${POSTGRES_PASSWORD}
+  #     BCRYPT_SALT_ROUNDS: 10
+  #     SECRET_KEY: secret
+  #     TYPEORM_SYNC: false
+  #     FRONTEND_URL: ${FRONTEND_URL}
+  #     LICENSE_SERVER_VALIDATE_URL: ${LICENSE_SERVER_VALIDATE_URL}
+  #     WORKER_ENABLE: true
+  #     RABBITMQ_URL: "amqp://rabbitmq:5672"
+  #   depends_on:
+  #     - db
+  #     - rabbitmq
+  #     - secrethound
+  #     - user-auth
+  #     - assets
+  #   restart: always
+  #   ports:
+  #     - "3020:3000"
+
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ${BACKEND_DIR}/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - secrethound
+      - user-auth
+      # - licenses
+      # - assets
+      # - vulnerability
+    restart: always
+ 
+  frontend:
+    build:
+      context: ${FRONTEND_DIR}
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      VITE_API_BASE_URL: ${BACKEND_URL}
+    depends_on:
+      - nginx
+    restart: unless-stopped
+
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
