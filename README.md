@@ -1,4 +1,4 @@
-Open-ASPM - Open Source Application Security Posture Management Platform
+OpenASPM - Open Source Application Security Posture Management Platform
 -------------------------------------------
 <img align="right" alt="logo" src="./static/logos/logo.png" width="100px" height="auto"/>
 
