@@ -1,0 +1,9 @@
+{
+  "name": "message-pub-sub",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/message-pub-sub/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project message-pub-sub --web",
+  "targets": {}
+}

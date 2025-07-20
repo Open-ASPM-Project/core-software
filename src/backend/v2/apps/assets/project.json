@@ -1,0 +1,123 @@
+{
+  "name": "assets",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/assets/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "assets": [
+          {
+            "glob": "**/httpx.worker.js",
+            "input": "apps/assets/src/app/worker",
+            "output": "."
+          },
+          {
+            "glob": "**/nmap.worker.js",
+            "input": "apps/assets/src/app/worker",
+            "output": "."
+          },
+          {
+            "glob": "**/cloudlist.worker.js",
+            "input": "apps/assets/src/app/worker",
+            "output": "."
+          },
+          {
+            "glob": "**/steampipe-export-aws.worker.js",
+            "input": "apps/assets/src/app/worker",
+            "output": "."
+          },
+          {
+            "glob": "**/gowitness.worker.js",
+            "input": "apps/assets/src/app/worker",
+            "output": "."
+          },
+          {
+            "glob": "**/httpx.worker.js",
+            "input": "apps/assets/src/app/worker",
+            "output": "."
+          },
+          {
+            "glob": "**/katana.worker.js",
+            "input": "apps/assets/src/app/worker",
+            "output": "."
+          },
+          {
+            "glob": "**/uro.worker.js",
+            "input": "apps/assets/src/app/worker",
+            "output": "."
+          }
+        ],
+        "command": "webpack-cli build",
+        "args": ["node-env=production"],
+        "transformers": [
+          {
+            "name": "@nestjs/swagger/plugin",
+            "options": {
+              "introspectComments": true
+            }
+          }
+        ]
+      },
+      "configurations": {
+        "development": {
+          "args": ["node-env=development"]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "assets:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "assets:build:development"
+        },
+        "production": {
+          "buildTarget": "assets:build:production"
+        }
+      }
+    },
+    "test": {
+      "options": {
+        "passWithNoTests": true
+      }
+    },
+    "migration:gen": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project tsconfig.app.json ../../node_modules/typeorm/cli migration:generate src/migrations/assets-migration --pretty -d src/data-source.ts",
+        "forwardAllArgs": true,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "migration:create": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "typeorm migration:create src/migrations/assets-migration",
+        "forwardAllArgs": true,
+        "cwd": "{projectRoot}"
+      }
+    },
+    "migration:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project tsconfig.app.json ../../node_modules/typeorm/cli migration:run -d src/data-source.ts",
+        "cwd": "{projectRoot}"
+      }
+    },
+    "migration:revert": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project tsconfig.app.json ../../node_modules/typeorm/cli migration:revert -d src/data-source.ts",
+        "cwd": "{projectRoot}"
+      }
+    }
+  }
+}

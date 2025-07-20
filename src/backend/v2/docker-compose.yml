@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  user-auth:
+    build:
+      context: .
+      dockerfile: ./apps/user-auth/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5433
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASS: password
+      BCRYPT_SALT_ROUNDS: 10
+      SECRET_KEY: secret
+      TYPEORM_SYNC: false
+      FRONTEND_URL: 'http://34.93.168.209:5173'
+      LICENSE_SERVER_URL: 'https://licence.thefirewall.org'
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: firewall
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

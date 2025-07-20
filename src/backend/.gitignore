@@ -1,0 +1,46 @@
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+venv/
+venv/
+./.venv
+.venv
+v1/.venv
+
+my-venv
+/my-venv
+./my-venv
+
+# VSCode
+.vscode/
+
+# mypy
+.mypy_cache/
+
+# pytest
+.pytest_cache/
+
+tmp/
+
+__pycache__
+.env
+pr_scan
+repoScan
+leaks.json
+TH_new.txt
+gitData.txt
+gitleaks
+trufflehog
+
+v1/.vscode
+
+.vscode
+
+v2/screenshots
+v2/crawled_*
+v2/uro_output

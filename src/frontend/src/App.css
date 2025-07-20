@@ -1,0 +1,36 @@
+#root {
+  /* max-width: 1280px; */
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  padding-top: 0px;
+  /* text-align: center; */
+}
+
+/* Custom Scroll View  */
+
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: rgb(211 211 211 / 0.3) rgb(211 211 211 / 0.1); /* Firefox */
+}
+
+/* For Chrome/Safari/Edge */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgb(211 211 211 / 0.1);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(211 211 211 / 0.3);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(211 211 211 / 0.5);
+}

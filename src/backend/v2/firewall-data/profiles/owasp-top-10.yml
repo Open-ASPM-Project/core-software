@@ -1,0 +1,7 @@
+
+templates:
+  - http/vulnerabilities/
+  - headless/vulnerabilities/
+  - network/vulnerabilities/
+  - headless/window-name-domxss.yaml
+  - headless/prototype-pollution-check.yaml

@@ -1,0 +1,85 @@
+name: Deploy the Dashboard
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: /home/unreal/secret-hound-V2
+    steps:
+      - name: Clone or Pull Repository
+        env:
+          GIT_PAT: ${{ secrets.GIT_PAT }}
+        run: |
+          BRANCH="main"
+          REPO_URL="https://github.com/TheFirewall-code/secret-hound-V2.git"
+          TARGET_DIR="/home/unreal/secret-hound-V2"
+          
+          # Ensure GIT_PAT is set
+          if [ -z "$GIT_PAT" ]; then
+              echo "Error: GIT_PAT environment variable is not set."
+              echo "Please set it using: export GIT_PAT=your_personal_access_token"
+              exit 1
+          fi
+          
+          # Function to insert PAT into the repository URL
+          insert_pat_into_url() {
+              url="https://github.com/TheFirewall-code/secret-hound-V2.git"
+              # Insert the PAT after 'https://'
+              echo "$url" | sed "s#https://#https://$GIT_PAT@#"
+          }
+          
+          # Function to clone the repository
+          clone_repo() {
+              echo "Cloning repository from $REPO_URL to $TARGET_DIR..."
+              AUTH_REPO_URL=$(insert_pat_into_url "$REPO_URL")
+              git clone -b "$BRANCH" "$AUTH_REPO_URL" "$TARGET_DIR"
+              echo "Repository cloned successfully."
+          }
+          
+          # Function to pull the latest changes
+          pull_repo() {
+              echo "Pulling latest changes in $TARGET_DIR..."
+              cd "$TARGET_DIR"
+          
+              # Get the current remote URL
+              CURRENT_REMOTE_URL=$(git config --get remote.origin.url)
+          
+              # Insert PAT into the remote URL
+              AUTH_REMOTE_URL=$(insert_pat_into_url "$CURRENT_REMOTE_URL")
+          
+              # Update the remote URL with PAT
+              git remote set-url origin "$AUTH_REMOTE_URL"
+          
+              # Perform git pull
+              git pull origin "$BRANCH"
+          
+              # Reset the remote URL to exclude PAT
+              git remote set-url origin "$CURRENT_REMOTE_URL"
+          
+              echo "Repository updated successfully."
+          }
+          
+          # -------------------------------
+          # Main Logic
+          # -------------------------------
+          
+          if [ -d "$TARGET_DIR/.git" ]; then
+              # Directory exists and is a Git repository
+              pull_repo
+          else
+              # Directory does not exist or is not a Git repository
+              clone_repo
+          fi
+
+      - name: Create test file
+        run: |
+          cd /home/unreal/secret-hound-V2
+          touch test1.txt
+          
+

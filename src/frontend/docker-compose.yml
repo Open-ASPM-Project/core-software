@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_BASE_URL: http://localhost
+    restart: unless-stopped
+  
+
