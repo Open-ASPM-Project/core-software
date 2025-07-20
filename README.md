@@ -1,6 +1,6 @@
 Open-ASPM - Open Source Application Security Posture Management Platform
 -------------------------------------------
-<img align="right" alt="logo" src="./static/logos/logo.png"/> 
+<img align="right" alt="logo" src="./static/logos/logo.png" width="100px" height="auto"/>
 
 Open-ASPM is an open source Application Security Platform that provides comprehensive visibility and control, enabling developers to build securely and security teams to manage risk effectively.
 
