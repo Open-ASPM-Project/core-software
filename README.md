@@ -166,7 +166,7 @@ Contributing
 
 Want to help build Open-ASPM? We welcome all contributions!
 
-Check out our [contributing page](CONTRIBUTING.md) to see the many ways you can get involved. Please also review our [Code of conduct](code_of_conduct.md).
+Check out our [contributing page](contribution.md) to see the many ways you can get involved. Please also review our [Code of conduct](code_of_conduct.md).
 
 Feel free to fork our code, experiment, create patches, and send us pull requests through GitHub [issues](https://github.com/open-aspm-project/core-software/issues).
 
