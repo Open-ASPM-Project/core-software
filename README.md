@@ -17,6 +17,8 @@ The Open-ASPM project aims to democratize cybersecurity by providing enterprise-
 
 [![CLA FREE initiative](https://raw.githubusercontent.com/ossbase-org/ossbase.org/main/logos/cla-free-small.png)](https://ossbase.org/initiatives/cla-free/)
 
+[![Demo](https://img.youtube.com/vi/-0HxBbGlMgc/maxresdefault.jpg)](https://www.youtube.com/watch?v=-0HxBbGlMgc)
+
 Core functions
 ------------------
 - A **complete and robust application security posture management platform** that can be deployed on-premise, in the cloud, or as a SaaS solution, suitable for organizations of all sizes. 
